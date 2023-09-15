@@ -4,6 +4,14 @@ const {hash, compare} = require("bcryptjs")
 const AppError = require("../utils/AppError");
 
 describe("UserCreateService", () =>{
+    let userRepositoryInMemory = null
+    let userCreateService = null
+
+    beforeEach(()=>{
+        userRepositoryInMemory = new UserRepositoryInMemory()
+        userCreateService = new UserCreateService(userRepositoryInMemory)
+    })
+
     it("user should be create", async ()=>{
         const user ={
             name: "User test",
@@ -11,8 +19,7 @@ describe("UserCreateService", () =>{
             password: "123"
         }
     
-        const userRepositoryInMemory = new UserRepositoryInMemory()
-        const userCreateService = new UserCreateService(userRepositoryInMemory)
+       
         const userCreated = await userCreateService.execute(user)
             expect(userCreated).toHaveProperty("id")
     })
@@ -28,9 +35,6 @@ describe("UserCreateService", () =>{
             email: "user@test.com",
             password: "231"
         }
-
-        const userRepository = new UserRepositoryInMemory()
-        const userCreateService = new UserCreateService(userRepository)
 
         await userCreateService.execute(user1)
         await expect(userCreateService.execute(user2)).rejects.toEqual(new AppError("Este e-mail já está em uso"))
